@@ -73,7 +73,7 @@
         /* BUTTON */
         .btn-submit {
             background-color: var(--accent-gold);
-            color: black;
+            color:rgb(255, 255, 255);
             font-weight: 700;
             padding: 12px 40px;
             border-radius: 4px;
@@ -170,29 +170,31 @@
                 </div>
 
                 <div class="md:col-span-8 p-6 md:p-12">
-                    <form action="#" class="space-y-8 max-w-3xl">
-                        
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                            <div>
-                                <label class="input-label">WHAT'S YOUR NAME?</label>
-                                <input type="text" placeholder="Full Name" class="custom-input hover-mag">
-                            </div>
-                            <div>
-                                <label class="input-label">WHAT'S YOUR EMAIL?</label>
-                                <input type="email" placeholder="user@gmail.com" class="custom-input hover-mag">
-                            </div>
-                        </div>
+                    <form id="contact-form" class="space-y-8 max-w-3xl">
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div>
+            <label class="input-label">WHAT'S YOUR NAME?</label>
+            <input id="user-name" type="text" placeholder="Full Name" class="custom-input hover-mag" required>
+        </div>
+        <div>
+            <label class="input-label">WHAT'S YOUR EMAIL?</label>
+            <input id="user-email" type="email" placeholder="user@gmail.com" class="custom-input hover-mag" required>
+        </div>
+    </div>
 
-                        <div>
-                            <label class="input-label">HOW CAN I HELP?</label>
-                            <textarea rows="6" placeholder="Describe your project or idea..." class="custom-input hover-mag"></textarea>
-                        </div>
+    <div>
+        <label class="input-label">HOW CAN I HELP?</label>
+        <textarea id="user-message" rows="6" placeholder="Describe your project or idea..." class="custom-input hover-mag" required></textarea>
+    </div>
 
-                        <div class="pt-4">
-                            <button type="submit" class="btn-submit hover-mag">Send</button>
-                        </div>
+    <div class="pt-4">
+        <button type="submit" class="btn-submit hover-mag">
+            <i class="fa-solid fa-paper-plane mr-2"></i> SEND MESSAGE
+        </button>
+    </div>
 
-                    </form>
+</form>
                 </div>
 
             </div>

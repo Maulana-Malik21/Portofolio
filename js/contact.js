@@ -47,3 +47,30 @@ function updateTime() {
 // Jalankan fungsi waktu
 setInterval(updateTime, 1000);
 updateTime(); // Jalankan sekali di awal agar tidak menunggu 1 detik
+
+// === 3. SEND EMAIL FUNCTION (MAILTO) ===
+    const contactForm = document.getElementById('contact-form');
+    
+    if (contactForm) {
+        contactForm.addEventListener('submit', function(e) {
+            e.preventDefault(); // Mencegah halaman refresh
+
+            // 1. Ambil nilai dari input
+            const name = document.getElementById('user-name').value;
+            const email = document.getElementById('user-email').value; // Email pengirim (untuk referensi di body)
+            const message = document.getElementById('user-message').value;
+
+            // 2. Format Pesan Email
+            // Tujuan Email Anda (Sesuai contact.html)
+            const myEmail = "maulanamalik0213@gmail.com"; 
+            
+            const subject = encodeURIComponent(`New Project Inquiry from ${name}`);
+            const body = encodeURIComponent(`Name: ${name}\nContact Email: ${email}\n\nMessage:\n${message}`);
+
+            // 3. Buka Aplikasi Email User
+            window.location.href = `mailto:${myEmail}?subject=${subject}&body=${body}`;
+            
+            // 4. Reset Form (Opsional)
+            // contactForm.reset(); 
+        });
+    }
