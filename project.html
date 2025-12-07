@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maulana Malik | HYPER WORKS</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://api.fontshare.com/v2/css?f[]=clash-display@200,400,600,700&f[]=satoshi@300,400,500,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --bg-space: #030303;
+            --text-white: #ffffff;
+            --accent-gold: #c4a773;
+            --accent-gold-glow: rgba(196, 167, 115, 0.5);
+            --border-dim: rgba(255, 255, 255, 0.1);
+        }
+
+        body {
+            background-color: var(--bg-space);
+            color: var(--text-white);
+            font-family: 'Satoshi', sans-serif;
+            margin: 0; overflow-x: hidden;
+            perspective: 2000px;
+        }
+
+        .font-clash { font-family: 'Clash Display', sans-serif; }
+        .font-mono { font-family: 'JetBrains Mono', monospace; }
+        .text-gold { color: var(--accent-gold); }
+
+        #project-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; }
+        .film-grain { position: fixed; inset: 0; z-index: 50; pointer-events: none; opacity: 0.03; background: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.5' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E"); }
+        
+        /* Utilitas Teks & Tombol */
+        .nav-link { position: relative; text-transform: uppercase; font-size: 12px; letter-spacing: 2px; color: #888; transition: 0.3s; }
+        .nav-link:hover { color: var(--accent-gold); }
+        .btn-gold { background: var(--accent-gold); color: #000; font-weight: 700; padding: 14px 36px; font-family: 'Clash Display', sans-serif; letter-spacing: 1px; transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1); position: relative; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+        .btn-gold:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 15px 30px var(--accent-gold-glow); }
+        .btn-outline { border: 1px solid rgba(255,255,255,0.2); color: #fff; padding: 14px 36px; font-family: 'Clash Display', sans-serif; letter-spacing: 1px; transition: all 0.3s ease; }
+        .btn-outline:hover { border-color: var(--accent-gold); color: var(--accent-gold); background: rgba(196, 167, 115, 0.08); transform: translateY(-3px); }
+
+        /* Project Card Styles */
+        .project-card-wrapper { perspective: 1500px; margin-bottom: 5rem; }
+        .project-card { position: relative; border-bottom: 1px solid var(--border-dim); padding: 3rem 2rem; background: rgba(255,255,255,0.02); border-radius: 16px; transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1); transform-style: preserve-3d; }
+        .project-card:hover { border-color: rgba(196, 167, 115, 0.4); box-shadow: 0 30px 60px -30px rgba(0,0,0,0.8); }
+        .pop-out-content { transform: translateZ(40px); pointer-events: none; }
+        .pop-out-image { transform: translateZ(20px); }
+        .project-thumb { width: 100%; height: 550px; overflow: hidden; border-radius: 12px; position: relative; margin-bottom: 2.5rem; box-shadow: 0 20px 40px rgba(0,0,0,0.4); transition: all 0.5s ease; }
+        .project-card:hover .project-thumb { box-shadow: 0 40px 80px -20px var(--accent-gold-glow); }
+        .project-img { width: 100%; height: 100%; object-fit: cover; transition: transform 1.2s cubic-bezier(0.19, 1, 0.22, 1), filter 0.5s ease; filter: grayscale(100%) brightness(0.7) contrast(1.1); }
+        .project-card:hover .project-img { transform: scale(1.1); filter: grayscale(0%) brightness(1) contrast(1); }
+        .project-title { transition: color 0.3s ease; }
+        .project-card:hover .project-title { color: var(--accent-gold); }
+        .hero-line { display: block; overflow: hidden; }
+        .hero-line span { display: block; transform: translateY(100%); }
+    </style>
+</head>
+<body>
+
+    <canvas id="project-canvas"></canvas>
+    <div class="film-grain"></div>
+
+    <nav class="fixed top-0 w-full z-50 mix-blend-difference">
+        <div class="max-w-7xl mx-auto px-6 py-6 md:py-8 flex justify-between items-start uppercase tracking-widest text-xs">
+            
+            <div class="flex flex-col">
+                <span class="text-gold font-bold">Status: Online</span>
+                <span>Maulana Malik</span>
+            </div>
+
+            <div class="hidden md:flex gap-12 font-bold text-gray-400">
+                <a href="index.html" class="nav-link hover:text-gold transition">Home</a>
+                <a href="about.html" class="nav-link hover:text-gold transition">About</a>
+                <a href="project.html" class="nav-link hover:text-gold transition">Project</a>
+                <a href="contact.html" class="nav-link hover:text-gold transition">Contact</a>
+            </div>
+
+            <div class="flex flex-col items-end">
+                <span class="hidden md:block">SYS.V-2025</span>
+                <button id="mobile-menu-btn" class="md:hidden text-gold font-bold border border-gold/30 px-3 py-1 hover:bg-gold hover:text-black transition cursor-pointer">
+                    MENU 
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <div id="mobile-menu-overlay" class="md:hidden fixed inset-0 bg-black/95 z-[60] flex flex-col items-center justify-center opacity-0 pointer-events-none transition-all duration-500 backdrop-blur-sm">
+        <div class="flex flex-col gap-8 text-center font-clash font-bold text-4xl uppercase tracking-widest">
+            <a href="index.html" class="mobile-link text-white hover:text-gold transition-colors">Home</a>
+            <a href="about.html" class="mobile-link text-white hover:text-gold transition-colors">About</a>
+            <a href="project.html" class="mobile-link text-white hover:text-gold transition-colors">Project</a>
+            <a href="contact.html" class="mobile-link text-white hover:text-gold transition-colors">Contact</a>
+        </div>
+        
+        <button id="close-menu-btn" class="mt-12 text-gold text-xs font-mono uppercase tracking-[0.3em] border border-gold/30 px-6 py-3 hover:bg-gold hover:text-black transition-all cursor-pointer">
+            CLOSE SYSTEM 
+        </button>
+    </div>
+
+    <main class="pt-32 pb-20 px-6 max-w-7xl mx-auto relative z-10">
+        <section class="mb-40 grid md:grid-cols-12 gap-12 border-b border-white/10 pb-20 hero-section">
+            <div class="md:col-span-8">
+                <h1 class="font-clash font-medium text-3xl md:text-5xl leading-tight mb-10">
+                    <span class="hero-line"><span>I build scalable and interactive</span></span>
+                    <span class="hero-line"><span>web experiences, giving you</span></span>
+                    <span class="hero-line"><span class="text-gold">complete control</span> over your</span>
+                    <span class="hero-line"><span>digital presence.</span></span>
+                </h1>
+                <div class="flex gap-6 hero-btns opacity-0">
+                    <a href="#contact" class="btn-gold hover-mag">Get in touch</a>
+                    <a href="#list" class="btn-outline hover-mag">See Projects</a>
+                </div>
+            </div>
+            <div class="md:col-span-4 flex flex-col justify-end text-right hero-status opacity-0">
+                <span class="text-gold font-mono text-xs tracking-widest mb-2">/// STATUS</span>
+                <span class="text-sm text-gray-400">Open for New Opportunities</span>
+            </div>
+        </section>
+
+        <section id="list" class="mb-32">
+            <div class="flex items-end justify-between mb-24">
+                <h2 class="font-clash font-bold text-6xl uppercase">Selected <span class="text-gold">Works</span></h2>
+                <span class="font-mono text-xs text-gray-500 hidden md:block">/// EXCELLENCE DELIVERED</span>
+            </div>
+
+            <div class="grid grid-cols-1 gap-12">
+                <div class="project-card-wrapper">
+                    <a href="https://maulana-malik21.github.io/Campuss-Market/" target="_blank" class="block w-full"> 
+                        <div class="project-card js-tilt" data-tilt data-tilt-speed="1000" data-tilt-max="5" data-tilt-perspective="1500">
+                            <div class="project-thumb pop-out-image">
+                                <div class="absolute inset-0 bg-black/40 z-10 group-hover:bg-transparent transition-all duration-500 pointer-events-none"></div>
+                                <img src="./assets/Screenshot (117).png" class="project-img" alt="CAMPUSS">
+                            </div>
+                            <div class="flex flex-col md:flex-row justify-between items-start md:items-end relative z-20 pop-out-content">
+                                <div>
+                                    <span class="font-mono text-gold text-xs mb-3 block tracking-widest">01 / WEB MARKETPLACE</span>
+                                    <h3 class="project-title text-5xl font-clash font-bold mb-4">CAMPUSS</h3>
+                                    <p class="text-gray-300 text-lg max-w-md leading-relaxed">This E-Commerce Website is designed to make online shopping effortless.</p>
+                                </div>
+                                <div class="mt-8 md:mt-0 flex gap-3">
+                                    <span class="border border-white/20 px-5 py-2 rounded-full text-xs font-bold uppercase tracking-wider bg-black/50 backdrop-blur">HTML</span>
+                                    <span class="border border-white/20 px-5 py-2 rounded-full text-xs font-bold uppercase tracking-wider bg-black/50 backdrop-blur">Tailwind</span>
+                                    <span class="border border-white/20 px-5 py-2 rounded-full text-xs font-bold uppercase tracking-wider bg-black/50 backdrop-blur">JS</span>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+
+                <div class="project-card-wrapper">
+                    <a href="https://maulana-malik21.github.io/Go-Booking/I" target="_blank" class="block w-full">
+                        <div class="project-card js-tilt" data-tilt data-tilt-speed="1000" data-tilt-max="5" data-tilt-perspective="1500">
+                            <div class="project-thumb pop-out-image">
+                                <div class="absolute inset-0 bg-black/40 z-10 group-hover:bg-transparent transition-all duration-500 pointer-events-none"></div>
+                                <img src="./assets/Screenshot (119).png" class="project-img" alt="Lets Booking">
+                            </div>
+                            <div class="flex flex-col md:flex-row justify-between items-start md:items-end relative z-20 pop-out-content">
+                                <div>
+                                    <span class="font-mono text-gold text-xs mb-3 block tracking-widest">02 / WEB BOOKING</span>
+                                    <h3 class="project-title text-5xl font-clash font-bold mb-4">Let's Booking</h3>
+                                    <p class="text-gray-300 text-lg max-w-md leading-relaxed">This Futsal Court Booking Website was created to deliver a fast and seamless booking experience.</p>
+                                </div>
+                                <div class="mt-8 md:mt-0 flex gap-3">
+                                    <span class="border border-white/20 px-5 py-2 rounded-full text-xs font-bold uppercase tracking-wider bg-black/50 backdrop-blur">HTML</span>
+                                    <span class="border border-white/20 px-5 py-2 rounded-full text-xs font-bold uppercase tracking-wider bg-black/50 backdrop-blur">CSS</span>
+                                    <span class="border border-white/20 px-5 py-2 rounded-full text-xs font-bold uppercase tracking-wider bg-black/50 backdrop-blur">JS</span>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <section id="contact" class="py-32 border-t border-white/10 text-center">
+            <h2 class="font-clash font-bold text-4xl md:text-7xl uppercase mb-10 hover-mag cursor-pointer transition-all duration-500 hover:text-gold hover:tracking-wider">
+                Let's build something amazing.
+            </h2>
+            <a href="contact.html" class="inline-block relative group overflow-hidden pb-1">
+                <span class="font-mono text-gold tracking-widest relative z-10 group-hover:text-white transition">START A CONVERSATION &rarr;</span>
+                <div class="absolute bottom-0 left-0 w-full h-[1px] bg-gold group-hover:w-0 transition-all duration-300"></div>
+                <div class="absolute bottom-0 left-0 w-0 h-[1px] bg-white group-hover:w-full transition-all duration-300 delay-100"></div>
+            </a>
+        </section>
+    </main>
+
+    <footer class="bg-black border-t border-white/10 pt-16 pb-8 px-6 md:px-12 relative z-40">
+        <div class="max-w-[1600px] mx-auto">
+            <div class="flex justify-between items-end mb-16">
+                <h3 class="font-clash font-bold text-3xl text-white tracking-wide">Maulana Malik</h3>
+                <span class="font-mono text-[10px] text-gray-500 uppercase tracking-widest hidden md:block">Fullstack Developer</span>
+            </div>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-12 mb-20 font-mono text-[11px] uppercase tracking-wider text-gray-400">
+                <div class="flex flex-col gap-4">
+                    <span class="text-white font-bold mb-2 tracking-widest">Overview</span>
+                    <a href="project.html" class="hover:text-gold transition-colors duration-300">[01] Projects</a>
+                    <a href="about.html" class="hover:text-gold transition-colors duration-300">[02] About</a>
+                    <a href="contact.html" class="hover:text-gold transition-colors duration-300">[03] Contact</a>
+                </div>
+                </div>
+            <div class="border-t border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center font-mono text-[10px] text-gray-600 uppercase tracking-widest gap-4">
+                <span>&copy; 2025 Maulana Malik</span>
+                <span id="time-display" class="text-gray-400">00:00 PM</span>
+            </div>
+        </div>
+    </footer>
+
+    <audio id="bg-music" loop>
+        <source src="Interstellar Main Theme - Extra Extended - Soundtrack by Hans Zimmer.mp3" type="audio/mpeg">
+    </audio>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.8.0/vanilla-tilt.min.js"></script>
+
+    <script src="js/global-effects.js"></script>
+    <script src="js/project.js"></script>
+</body>
+</html>

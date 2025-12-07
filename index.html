@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maulana Malik | INTERSTELLAR </title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <link href="https://api.fontshare.com/v2/css?f[]=clash-display@200,300,400,500,600,700&f[]=satoshi@300,400,500,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --bg-space: #050505;
+            --text-starlight: #ffffff;
+            --accent-gold: #c4a773; 
+            --accent-gold-glow: rgba(196, 167, 115, 0.6);
+            --border-dim: rgba(255, 255, 255, 0.1);
+        }
+
+        body {
+            background-color: var(--bg-space);
+            color: var(--text-starlight);
+            font-family: 'Satoshi', sans-serif;
+            margin: 0; overflow-x: hidden; cursor: none;
+        }
+
+        .font-clash { font-family: 'Clash Display', sans-serif; }
+        .font-mono { font-family: 'JetBrains Mono', monospace; }
+        .text-gold { color: var(--accent-gold); }
+
+        /* CORE BACKGROUNDS */
+        #webgl-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; }
+        .film-grain { position: fixed; inset: 0; z-index: 50; pointer-events: none; opacity: 0.07; background: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.5' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E"); }
+        .vignette { position: fixed; inset: 0; z-index: 40; pointer-events: none; background: radial-gradient(circle at center, transparent 40%, black 100%); }
+        
+        /* CURSOR */
+        .cursor-dot { position: fixed; top: 0; left: 0; width: 4px; height: 4px; background: var(--accent-gold); border-radius: 50%; pointer-events: none; z-index: 10000; transform: translate(-50%, -50%); box-shadow: 0 0 20px var(--accent-gold); }
+        .cursor-ring { position: fixed; top: 0; left: 0; width: 40px; height: 40px; border: 1px solid rgba(196, 167, 115, 0.3); border-radius: 50%; pointer-events: none; z-index: 9999; transform: translate(-50%, -50%); transition: all 0.2s ease-out; mix-blend-mode: screen; }
+
+        /* === CORE SYSTEM SECTION === */
+        .core-section {
+            position: relative;
+            min-height: 100vh; /* Full Height agar fokus */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            border-top: 1px solid var(--border-dim);
+            border-bottom: 1px solid var(--border-dim);
+            background: radial-gradient(circle at center, #0a0a0a 0%, #000 70%);
+        }
+
+        .core-container {
+            position: relative;
+            width: 600px; height: 600px;
+            display: flex; justify-content: center; align-items: center;
+            transform-style: preserve-3d;
+            perspective: 1000px;
+        }
+
+        /* Cincin Utama (The Glowing Ring) */
+        .accretion-disk {
+            position: absolute;
+            width: 550px; height: 550px;
+            border-radius: 50%;
+            border: 2px solid transparent;
+            background: conic-gradient(from 0deg, transparent 0%, var(--accent-gold) 20%, transparent 40%, transparent 100%);
+            mask: radial-gradient(transparent 55%, black 60%);
+            -webkit-mask: radial-gradient(transparent 55%, black 60%);
+            animation: rotate 20s linear infinite;
+            box-shadow: 0 0 100px var(--accent-gold-glow), inset 0 0 50px var(--accent-gold-glow);
+            opacity: 0.8;
+        }
+
+        /* Orbit Skills */
+        .orbit {
+            position: absolute; border-radius: 50%; border: 1px solid rgba(255,255,255,0.05);
+            display: flex; justify-content: center; align-items: center;
+        }
+        /* Satu Orbit Utama untuk 4 Skill */
+        .orbit-main { width: 450px; height: 450px; animation: rotate 40s linear infinite; }
+
+        /* Skill Icons */
+        .orbit-icon {
+            position: absolute;
+            width: 60px; height: 60px; /* Sedikit lebih besar */
+            background: #050505;
+            border: 1px solid var(--border-dim);
+            border-radius: 50%;
+            display: flex; justify-content: center; align-items: center;
+            font-size: 1.8rem; color: #888;
+            box-shadow: 0 0 30px rgba(0,0,0,0.8);
+            transition: 0.3s;
+            animation: rotate 40s linear infinite reverse; /* Counter-rotate agar icon tegak */
+        }
+        
+        .orbit-icon:hover { color: var(--accent-gold); border-color: var(--accent-gold); box-shadow: 0 0 30px var(--accent-gold-glow); scale: 1.2; z-index: 10; }
+
+        /* Posisi 4 Skill (Atas, Kanan, Bawah, Kiri) */
+        .pos-html { top: 0; left: 50%; transform: translate(-50%, -50%); }
+        .pos-css { top: 50%; right: 0; transform: translate(50%, -50%); }
+        .pos-js { bottom: 0; left: 50%; transform: translate(-50%, 50%); }
+        .pos-tailwind { top: 50%; left: 0; transform: translate(-50%, -50%); }
+        
+        /* Data Inti (Tengah) */
+        .core-data-box {
+            position: relative; z-index: 10;
+            width: 300px; height: 300px;
+            background: rgba(10,10,10,0.9);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border-dim);
+            border-radius: 50%;
+            display: flex;  justify-content: center; align-items: center;
+            text-align: center; padding: 2rem;
+            box-shadow: 0 0 60px rgba(0,0,0,0.9), inset 0 0 30px rgba(196, 167, 115, 0.05);
+        }
+        .core-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--accent-gold); letter-spacing: 3px; margin-bottom: 1rem; display: block; }
+
+        @keyframes rotate { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* HORIZONTAL SCROLL & ANIMATION UTILS */
+        .space-journey-wrapper { width: 400%; height: 100vh; display: flex; flex-wrap: nowrap; }
+        .space-panel { width: 100vw; height: 100vh; display: flex; align-items: center; padding: 0 10vw; border-right: 1px solid var(--border-dim); position: relative; }
+        .project-monolith { background: linear-gradient(45deg, #0a0a0a, #111); border: 1px solid rgba(196, 167, 115, 0.2); transition: all 0.5s ease; }
+        .project-monolith:hover { border-color: var(--accent-gold); transform: translateY(-20px) scale(1.02); }
+        .reveal-load { opacity: 0; }
+        .reveal-text-span { display: block; transform: translateY(100%); }
+        .nav-link { position: relative; text-transform: uppercase; font-size: 12px; letter-spacing: 2px; color: #888; transition: 0.3s; }
+        .nav-link:hover { color: var(--accent-gold); }
+    </style>
+</head>
+<body>
+
+    <canvas id="webgl-canvas"></canvas>
+    <div class="film-grain"></div>
+    <div class="vignette"></div>
+    <div class="cursor-dot"></div>
+    <div class="cursor-ring"></div>
+
+    <nav class="fixed top-0 w-full p-8 flex justify-between items-start z-50 mix-blend-difference uppercase tracking-widest text-xs">
+    <div class="flex flex-col">
+        <span class="text-gold font-bold">Status: Online</span>
+        <span>Maulana Malik</span>
+    </div>
+
+    <div class="hidden md:flex gap-12 font-bold text-gray-400">
+        <a href="index.html" class="nav-link hover:text-gold transition">Home</a>
+        <a href="about.html" class="nav-link hover:text-gold transition">About</a>
+        <a href="project.html" class="nav-link hover:text-gold transition">Project</a>
+        <a href="contact.html" class="nav-link hover:text-gold transition">Contact</a>
+    </div>
+
+    <div class="flex flex-col items-end">
+        <span class="hidden md:block">SYS.V-2025</span>
+        
+        <button id="mobile-menu-btn" class="md:hidden text-gold font-bold border border-gold/30 px-3 py-1 mt-[-5px]">
+             MENU 
+        </button>
+    </div>
+</nav>
+
+<div id="mobile-menu-overlay" class="fixed inset-0 bg-black/95 z-40 flex flex-col items-center justify-center opacity-0 pointer-events-none transition-all duration-500 backdrop-blur-sm">
+    <div class="flex flex-col gap-8 text-center font-clash font-bold text-4xl uppercase tracking-widest">
+        <a href="index.html" class="mobile-link text-white hover:text-gold transition-colors">Home</a>
+        <a href="about.html" class="mobile-link text-white hover:text-gold transition-colors">About</a>
+        <a href="project.html" class="mobile-link text-white hover:text-gold transition-colors">Project</a>
+        <a href="contact.html" class="mobile-link text-white hover:text-gold transition-colors">Contact</a>
+    </div>
+    
+    <button id="close-menu-btn" class="mt-12 text-gold text-xs font-mono uppercase tracking-[0.3em] border border-gold/30 px-6 py-3 hover:bg-gold hover:text-black transition-all">
+        CLOSE SYSTEM 
+    </button>
+</div>
+
+    <main id="smooth-wrapper">
+        <div id="smooth-content">
+
+            <section id="intro" class="h-screen flex flex-col justify-center items-center relative px-6">
+                <p class="text-gold uppercase tracking-[0.5em] text-sm mb-6 reveal-load">Frontend Enthusiast</p>
+                <h1 class="font-clash font-bold text-[13vw] md:text-[11vw] leading-[0.85] text-center tracking-tight">
+                    <div class="overflow-hidden"><span class="reveal-text-spa ">MAULANA</span></div>
+                    <div class="overflow-hidden"><span class="text-gold reveal-text-span">MALIK</span></div>
+                </h1>
+                <div class="max-w-xl text-center mt-12 reveal-load">
+                    <p class="text-lg md:text-xl text-gray-400 leading-relaxed font-light">
+                        Crafting immersive digital experiences with modern web technologies.
+                    </p>
+                </div>
+            </section>
+
+            <section id="core-system" class="core-section">
+                <div class="core-container hover-tilt">
+                    
+                    <div class="accretion-disk"></div>
+                    
+                    <div class="orbit orbit-main">
+                        <div class="orbit-icon pos-html hover-mag" title="HTML5">
+                            <i class="fa-brands fa-html5"></i>
+                        </div>
+                        <div class="orbit-icon pos-css hover-mag" title="CSS3">
+                            <i class="fa-brands fa-css3-alt"></i>
+                        </div>
+                        <div class="orbit-icon pos-js hover-mag" title="JavaScript">
+                            <i class="fa-brands fa-js"></i>
+                        </div>
+                    </div>
+
+                    <div class="core-data-box hover-mag">
+                        <div class="flex flex-col items-center justify-center h-full">
+                            <span class="core-label">/// ABT_ME_1101 ///</span>
+                            <h3 class="font-clash font-bold text-2xl mb-4 text-white">WHY ME?</h3>
+                            <p class="text-sm text-gray-300 leading-relaxed">
+                                <strong class="text-gold">1 Year Experience.</strong><br>
+                                I have a solid foundation in HTML, CSS, and JavaScript, allowing me to create user-friendly and visually appealing interfaces. I work efficiently, pay attention to details, and always aim to deliver my best results. <strong class="text-white">HTML, CSS, & JS</strong>.
+                            </p>
+                            <i class="fa-solid fa-fingerprint text-gold mt-6 text-2xl opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="cosmos" class="horizontal-trigger h-screen overflow-hidden relative">
+                <div class="space-journey-wrapper">
+                    <div class="space-panel justify-center">
+                        <div>
+                            <span class="text-gold font-mono text-xs uppercase tracking-widest mb-4 block">/// Sector: Projects</span>
+                            <h2 class="text-6xl md:text-8xl font-clash font-bold leading-none">SELECTED<br> <span class="text-gold">PROJECT</span></h2>
+                            <p class="text-gray-500 mt-6 max-w-md">Scroll to explore data.</p>
+                        </div>
+                    </div>
+                    <div class="space-panel">
+                        <a href="https://maulana-malik21.github.io/Campuss-Market/" target="_blank"></a>
+                        <div class="project-monolith w-[80vw] md:w-[60vw] h-[70vh] flex flex-col md:flex-row overflow-hidden rounded-sm group hover-mag">
+                            <div class="w-full md:w-1/2 h-1/2 md:h-full overflow-hidden relative">
+                                <div class="absolute inset-0 bg-gold/10 mix-blend-overlay z-10"></div>
+                                <img src="./assets/Screenshot (117).png" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700 scale-110 group-hover:scale-100">
+                            </div>
+                            <div class="w-full md:w-1/2 p-8 md:p-12 flex flex-col justify-between">
+                                <div>
+                                    <span class="font-mono text-gold text-xs uppercase">System 01</span>
+                                    <h3 class="text-4xl font-clash font-bold mt-2 mb-6">CAMPUSS</h3>
+                                    <p class="text-gray-400 leading-relaxed mb-8">E-commerce simulation with cart logic</p>
+                                </div>
+                                <div class="flex gap-4 text-xs font-bold uppercase tracking-widest text-gold"><span>HTML</span> <span>CSS</span> <span>JS</span></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="space-panel">
+                        <a href="https://maulana-malik21.github.io/Go-Booking/" target="_blank"></a>
+                        <div class="project-monolith w-[80vw] md:w-[60vw] h-[70vh] flex flex-col md:flex-row overflow-hidden rounded-sm group hover-mag">
+                            <div class="w-full md:w-1/2 h-1/2 md:h-full overflow-hidden relative">
+                                <div class="absolute inset-0 bg-gold/10 mix-blend-overlay z-10"></div>
+                                <img src="./assets/Screenshot (119).png" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700 scale-110 group-hover:scale-100">
+                            </div>
+                            <div class="w-full md:w-1/2 p-8 md:p-12 flex flex-col justify-between">
+                                <div>
+                                    <span class="font-mono text-gold text-xs uppercase">System 02</span>
+                                    <h3 class="text-4xl font-clash font-bold mt-2 mb-6">WEB BOOKING</h3>
+                                    <p class="text-gray-400 leading-relaxed mb-8">This Futsal Court Booking Website was created to deliver a fast and seamless booking experience. Users can browse schedules, choose a court, and reserve their time slot through a clean and responsive interface.</p>
+                                </div>
+                                <div class="flex gap-4 text-xs font-bold uppercase tracking-widest text-gold"><span>HTML</span> <span>CSS</span><span>JS</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="event-horizon" class="h-screen flex flex-col justify-center items-center text-center px-6 relative">
+                <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--accent-gold)_0%,_transparent_30%)] opacity-10 pointer-events-none blur-[100px]"></div>
+                <p class="text-gold font-mono text-sm mb-12 animate-pulse">/// INITIATE TRANSMISSION</p>
+                <a href="contact.html" class="font-clash font-black text-[12vw] leading-[0.8] text-gold hover:text-white transition-colors duration-700 hover-mag z-10">CONTACT</a>
+                <div class="absolute bottom-12 w-full px-12 flex justify-between font-bold uppercase text-xs tracking-widest text-gray-500">
+                    <span>© 2025 Maulana Malik.</span>
+                    <div class="flex gap-8"><a href="#" class="hover:text-gold transition hover-mag">Github</a><a href="#" class="hover:text-gold transition hover-mag">LinkedIn</a></div>
+                </div>
+            </section>
+
+        </div>
+
+<footer class="bg-black border-t border-white/10 pt-16 pb-8 px-6 md:px-12 relative z-40">
+    <div class="max-w-[1600px] mx-auto">
+        <div class="flex justify-between items-end mb-16">
+            <h3 class="font-clash font-bold text-3xl text-white tracking-wide">Maulana Malik</h3>
+            <span class="font-mono text-[10px] text-gray-500 uppercase tracking-widest hidden md:block">Fullstack Developer</span>
+        </div>
+
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-12 mb-20 font-mono text-[11px] uppercase tracking-wider text-gray-400">
+            <div class="flex flex-col gap-4">
+                <span class="text-white font-bold mb-2 tracking-widest">Overview</span>
+                <a href="project.html" class="hover:text-gold transition-colors duration-300">[01] Projects</a>
+                <a href="about.html" class="hover:text-gold transition-colors duration-300">[02] About</a>
+                <a href="contact.html" class="hover:text-gold transition-colors duration-300">[03] Contact</a>
+            </div>
+            <div class="flex flex-col gap-4">
+                <span class="text-white font-bold mb-2 tracking-widest">Case Studies</span>
+                <a href="#" class="hover:text-gold transition-colors duration-300">[04] Web Booking</a>
+                <a href="#" class="hover:text-gold transition-colors duration-300">[05] CAMPUSS</a>
+            </div>
+            <div class="flex flex-col gap-4">
+                <span class="text-white font-bold mb-2 tracking-widest">Connect</span>
+                <a href="#" class="hover:text-gold transition-colors duration-300">[07] LinkedIn</a>
+                <a href="#" class="hover:text-gold transition-colors duration-300">[08] Instagram</a>
+                <a href="#" class="hover:text-gold transition-colors duration-300">[09] Twitter</a>
+            </div>
+        </div>
+
+        <div class="border-t border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center font-mono text-[10px] text-gray-600 uppercase tracking-widest gap-4">
+            <span>&copy; 2025 Maulana Malik</span>
+            <span id="time-display" class="text-gray-400">00:00 PM</span>
+        </div>
+    </div>
+</footer>
+    </main>
+
+<audio id="bg-music" loop>
+    <source src="Interstellar Main Theme - Extra Extended - Soundtrack by  Hans Zimmer.mp3" type="audio/mpeg">
+</audio>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@1.0.29/bundled/lenis.min.js"></script>
+
+    <script src="js/global-effects.js"></script>
+    <script src="js/home.js"></script>
+</body>
+</body>
+</html>
